@@ -14,7 +14,6 @@ def logicServerHandler(s, commandList):
             break
         time.sleep(waitTime)
     
-    s.close()
     
 def graphicsServerHandler(s):
     
@@ -31,7 +30,6 @@ def graphicsServerHandler(s):
         if "quit" in message.lower():
             break
     
-    s.close()
     
 def writeOutputToFile(line):
     f = open("clientOutput.txt", 'a')
@@ -45,7 +43,7 @@ def readCommandList(filename):
     for line in f:
         split = line.split('|')
         waitTime = split[1]
-        commands = split[0].split(',')
+        commands = split[0]
         commandList.append([commands, waitTime])
     return commandList
     
@@ -81,4 +79,7 @@ if __name__ == "__main__":
     t1.join()
     t2.join()
     
-    print("Done with both threads.")
+    logicSocket.close()
+    graphicsSocket.close()
+    
+    print("Client Done with both threads.")

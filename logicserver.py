@@ -17,13 +17,15 @@ def clientConnection(c):
         out = "Logic received from client: " + x
         print(out)
         
-        queue.put(x)
+        commands = x.split(',')
+        
+        for command in commands:
+            queue.put(command)
         
         if "quit" in x.lower():
             exit = True
     
-    print("Shutting down client connection.")
-    c.close()
+    print("LOGIC Shutting down client connection.")
 
 
 def graphicsConnection(c):
@@ -43,17 +45,21 @@ def graphicsConnection(c):
         
         message = "Message: "
         for command in commandList:
-            if "quit" in message.lower():
-                break
             message += " {}".format(command)
+            if "quit" in command.lower():
+                exit = True
+                break
         
         commandList = []
         print(message)
         c.send(message.encode())
-        time.sleep(1)
+        
+        if exit == True:
+            break
+        
+        time.sleep(.3)
     
-    print("Shutting down graphics connection.")
-    c.close()
+    print("LOGIC Shutting down graphics connection.")
 
 
 if __name__ == "__main__":
@@ -61,22 +67,22 @@ if __name__ == "__main__":
     graphicIP = 'localhost'
     
     #connect to graphics
-    print('Waiting for Graphics Server...')
+    print('LOGIC Waiting for Graphics Server...')
     graphicsSocket = socket.socket()
     port = 12344
     graphicsSocket.bind(('', port))
     graphicsSocket.listen(5)
     g, addrG = graphicsSocket.accept()
-    print('Got Graphics connection from', addrG)
+    print('LOGIC Got Graphics connection from', addrG)
     
     #connect to client
-    print("Waiting for CLient...")
+    print("LOGIC Waiting for CLient...")
     clientSocket = socket.socket()
     clientPort = 12345
     clientSocket.bind(('', clientPort))
     clientSocket.listen(5)
     c, addrC = clientSocket.accept()
-    print('Got Client connection from', addrC)
+    print('LOGIC Got Client connection from', addrC)
     
     t1 = threading.Thread(target=clientConnection, args=(c,))
     t2 = threading.Thread(target=graphicsConnection, args=(g,))
@@ -87,7 +93,12 @@ if __name__ == "__main__":
     t1.join()
     t2.join()
     
-    print("Done with both threads.")
+    c.close()
+    g.close()
+    graphicsSocket.close()
+    clientSocket.close()
+    
+    print("LOGIC Done with both threads.")
 
 
 

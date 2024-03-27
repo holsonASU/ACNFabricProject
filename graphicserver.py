@@ -37,3 +37,4 @@ while done == False:
 
 logicSocket.close()
 s.close()
+print("Graphics Exited Gracefully.")
