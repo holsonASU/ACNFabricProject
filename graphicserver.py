@@ -1,9 +1,15 @@
 import socket
+import sys
+
+logicIP = 'localhost'
+
+if len(sys.argv) > 1:
+    logicIP = sys.argv[1]
 
 #connect to logic node
 logicSocket = socket.socket()
 logicPort = 12344
-logicSocket.connect(('localhost', logicPort))
+logicSocket.connect((logicIP, logicPort))
 print("Graphics connected to Logic.")
 
 #listen for client node
@@ -20,7 +26,7 @@ done = False
 while done == False:
     message = logicSocket.recv(1024).decode()
     
-    print(message)
+    print("GRAPHICS RECEIVED FROM LOGIC: " + message)
     
     if "quit" in message.lower():
         done = True

@@ -1,0 +1,5 @@
+rotateLeft,zoomIn|.2
+rotateRight,zoomOut|.3
+rotateRight,zoomIn|.1
+rotateLeft,zoomIn|.4
+quit|0

@@ -19,7 +19,7 @@ def clientConnection(c):
         
         queue.put(x)
         
-        if x == 'quit':
+        if "quit" in x.lower():
             exit = True
     
     print("Shutting down client connection.")
@@ -43,7 +43,7 @@ def graphicsConnection(c):
         
         message = "Message: "
         for command in commandList:
-            if command == 'quit':
+            if "quit" in message.lower():
                 break
             message += " {}".format(command)
         
@@ -57,6 +57,8 @@ def graphicsConnection(c):
 
 
 if __name__ == "__main__":
+    
+    graphicIP = 'localhost'
     
     #connect to graphics
     print('Waiting for Graphics Server...')
