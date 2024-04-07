@@ -5,16 +5,18 @@ import time
 
 def logicServerHandler(s, commandList):
     
+    commandIndex = 0
+    
     for command in commandList:
-        message = str(command[0])
+        message = str(commandIndex) + '@' + str(command[0])
+        
         print("CLIENTSENT: " + message)
         waitTime = float(command[1])
         s.send(message.encode())
-        if message == "quit":
-            break
         time.sleep(waitTime)
+        commandIndex = commandIndex + 1
     
-    
+
 def graphicsServerHandler(s):
     
     done = False
@@ -51,7 +53,7 @@ def readCommandList(filename):
 
 if __name__ == "__main__":
     
-    commandListFile = "clientCommands.txt"
+    commandListFile = "clientCommands2.txt"
     logicIP = "localhost"
     graphicIP = "localhost"
     

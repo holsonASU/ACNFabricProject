@@ -1,5 +1,7 @@
 import socket
 import sys
+import random
+import time
 
 logicIP = 'localhost'
 
@@ -29,9 +31,14 @@ while done == False:
     print("GRAPHICS RECEIVED FROM LOGIC: " + message)
     
     if "quit" in message.lower():
+        print("Quit has been received.")
         done = True
+        c.send("quit")
     
     #render scene
+    
+    renderTime = random.gauss(8.33, 0.32) / 1000
+    time.sleep(renderTime)
     
     c.send(message.encode())
 

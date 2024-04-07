@@ -2,6 +2,8 @@ import socket
 import threading
 from queue import Queue
 import time
+import random
+import datetime
 
 queue = Queue()
 
@@ -17,10 +19,8 @@ def clientConnection(c):
         out = "Logic received from client: " + x
         print(out)
         
-        commands = x.split(',')
-        
-        for command in commands:
-            queue.put(command)
+        queue.put(x)
+        logCommandReceived(x.split('@')[0])
         
         if "quit" in x.lower():
             exit = True
@@ -34,33 +34,50 @@ def graphicsConnection(c):
     
     exit = False
     
-    commandList = []
-    
     while exit == False:
-        
+        commandList = []
         #process queue
         while queue.empty() == False:
             commandList.append(queue.get())
-            
         
         message = "Message: "
+        commandIndices = list()
         for command in commandList:
-            message += " {}".format(command)
+            
+            lis = command.split('@')
+            commandIndices.append(lis[0])
+            
             if "quit" in command.lower():
                 exit = True
                 break
         
-        commandList = []
-        print(message)
+        
+        message = str(commandIndices) + "@" + generateGraphicsMessage()
+        print("Logic Message to Graphics: " + message)
         c.send(message.encode())
         
         if exit == True:
+            print("Sending quit command")
+            time.sleep(.4)
+            c.send("quit")
             break
         
-        time.sleep(.3)
+        cpuTime = random.gauss(4.70, 0.66) / 1000
+        time.sleep(cpuTime)
     
     print("LOGIC Shutting down graphics connection.")
 
+def generateGraphicsMessage():
+    coords = ''
+    for i in range(1000):
+        coords = str(random.triangular(-10,10)) + ','
+    return coords
+
+def logCommandReceived(commandIndex):
+    fileName = "logs/logicLog.txt"
+    f = open(fileName, 'a')
+    line = commandIndex + '|' + str(datetime.datetime.now()) + '\n'
+    f.write(line)
 
 if __name__ == "__main__":
     
