@@ -53,14 +53,11 @@ def graphicsConnection(c):
         
         
         message = str(commandIndices) + "@" + generateGraphicsMessage()
+        if exit == True:
+            message = message + "quit"
         print("Logic Message to Graphics: " + message)
         c.send(message.encode())
         
-        if exit == True:
-            print("Sending quit command")
-            time.sleep(.4)
-            c.send("quit")
-            break
         
         cpuTime = random.gauss(4.70, 0.66) / 1000
         time.sleep(cpuTime)

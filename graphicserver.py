@@ -32,8 +32,7 @@ while done == False:
     
     if "quit" in message.lower():
         print("Quit has been received.")
-        done = True
-        c.send("quit")
+        break
     
     #render scene
     

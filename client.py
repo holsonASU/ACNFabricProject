@@ -3,9 +3,12 @@ import threading
 import sys
 import time
 
+done = False
+
 def logicServerHandler(s, commandList):
     
     commandIndex = 0
+    global done
     
     for command in commandList:
         message = str(commandIndex) + '@' + str(command[0])
@@ -16,10 +19,13 @@ def logicServerHandler(s, commandList):
         time.sleep(waitTime)
         commandIndex = commandIndex + 1
     
+    time.sleep(.4)
+    done = True
+    
 
 def graphicsServerHandler(s):
     
-    done = False
+    global done
     
     while done == False:
         
