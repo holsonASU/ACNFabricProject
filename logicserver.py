@@ -41,18 +41,18 @@ def graphicsConnection(c):
             commandList.append(queue.get())
         
         message = "Message: "
-        commandIndices = list()
+        commandIndices = ''
         for command in commandList:
             
-            lis = command.split('@')
-            commandIndices.append(lis[0])
+            ind = command.split('@')[0]
+            commandIndices = commandIndices + str(ind) + ','
             
             if "quit" in command.lower():
                 exit = True
                 break
         
         
-        message = str(commandIndices) + "@" + generateGraphicsMessage()
+        message = commandIndices + "@" + generateGraphicsMessage()
         if exit == True:
             message = message + "quit"
         print("Logic Message to Graphics: " + message)
@@ -75,6 +75,7 @@ def logCommandReceived(commandIndex):
     f = open(fileName, 'a')
     line = commandIndex + '|' + str(datetime.datetime.now()) + '\n'
     f.write(line)
+    f.close()
 
 if __name__ == "__main__":
     

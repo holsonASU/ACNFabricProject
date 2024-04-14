@@ -2,11 +2,29 @@ import socket
 import sys
 import random
 import time
+import cv2
+import datetime
+
+def logCommandReceived(indices):
+    if len(indices) > 0:
+        f = open("logs/graphicsCommandLog.txt", 'a')
+        line = indices + '|' + str(datetime.datetime.now()) + '\n'
+        f.write(line)
+        f.close()
+        
+def loadImage(file):
+    cap = cv2.imread(file)
+    return cap
 
 logicIP = 'localhost'
+videoFile = 'Videos/1080.png'
 
 if len(sys.argv) > 1:
     logicIP = sys.argv[1]
+    videoFile = sys.argv[2]
+
+#open video
+image = loadImage(videoFile)
 
 #connect to logic node
 logicSocket = socket.socket()
@@ -26,20 +44,29 @@ print("Graphics Connected to client.")
 done = False
 
 while done == False:
-    message = logicSocket.recv(1024).decode()
+    message = str(logicSocket.recv(1024).decode())
     
-    print("GRAPHICS RECEIVED FROM LOGIC: " + message)
+    indices = message.split('@')[0]
+    logCommandReceived(indices)
+    
+    print("Indices: " + indices)
     
     if "quit" in message.lower():
+        c.send("quit".encode())
         print("Quit has been received.")
         break
     
     #render scene
+    print('sleeping')
     
     renderTime = random.gauss(8.33, 0.32) / 1000
     time.sleep(renderTime)
-    
-    c.send(message.encode())
+    print('out of sleep')
+    c.send(indices.encode())
+    print('sent index')
+    #c.send(image.tobytes())
+    #print('sent frame')
+    #c.send('!'.encode())
 
 logicSocket.close()
 s.close()

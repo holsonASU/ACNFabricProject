@@ -2,6 +2,8 @@ import socket
 import threading
 import sys
 import time
+import cv2
+import datetime
 
 done = False
 
@@ -13,6 +15,8 @@ def logicServerHandler(s, commandList):
     for command in commandList:
         message = str(commandIndex) + '@' + str(command[0])
         
+        writeOutputToFile(commandIndex, False)
+        
         print("CLIENTSENT: " + message)
         waitTime = float(command[1])
         s.send(message.encode())
@@ -20,7 +24,7 @@ def logicServerHandler(s, commandList):
         commandIndex = commandIndex + 1
     
     time.sleep(.4)
-    done = True
+    sys.exit()
     
 
 def graphicsServerHandler(s):
@@ -29,18 +33,39 @@ def graphicsServerHandler(s):
     
     while done == False:
         
-        message = s.recv(1024).decode()
+        index = s.recv(1024).decode()
         
-        out = "From Graphics: " + message
-        print("CLIENT RECEIVED: " + message)
-        writeOutputToFile(out)
-        
-        if "quit" in message.lower():
+        if 'quit' in index:
             break
+        
+        #fileSize = int(s.recv(1024).decode())
+        
+        #packets = fileSize/2048
+        
+        #framePacket = ''
+        
+        count = 0
+        #while count < packets+1:
+        #    framePacket = s.recv(2048)
+        #    try:
+        #        framePacket = framePacket.decode()
+        #    except:
+        #        framePacket = ''
+        #    count = count + 1
+       # 
+        if index != '':
+            writeOutputToFile(index, True)
+        
+        print("CLIENT RECEIVED: " + str(index))
     
     
-def writeOutputToFile(line):
-    f = open("clientOutput.txt", 'a')
+def writeOutputToFile(index, received):
+    f = open("logs/clientOutput.txt", 'a')
+    line = ''
+    if (received):
+        line = "r:" +  str(index) + '|' + str(datetime.datetime.now()) + '\n'
+    else:
+        line = "s:" + str(index) + '|' + str(datetime.datetime.now()) + '\n'
     f.write(line)
     f.close()
 
