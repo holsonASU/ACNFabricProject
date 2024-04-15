@@ -2,7 +2,6 @@ import socket
 import threading
 import sys
 import time
-import cv2
 import datetime
 
 done = False

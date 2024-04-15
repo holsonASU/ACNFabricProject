@@ -2,7 +2,7 @@ import socket
 import sys
 import random
 import time
-import cv2
+#import cv2
 import datetime
 
 def logCommandReceived(indices):
@@ -13,8 +13,11 @@ def logCommandReceived(indices):
         f.close()
         
 def loadImage(file):
-    cap = cv2.imread(file)
-    return cap
+    #cap = cv2.imread(file)
+    f = open(file, 'rb')
+    img = f.read()
+    f.close()
+    return img
 
 logicIP = 'localhost'
 videoFile = 'Videos/1080.png'
@@ -24,7 +27,7 @@ if len(sys.argv) > 1:
     videoFile = sys.argv[2]
 
 #open video
-image = loadImage(videoFile)
+#image = loadImage(videoFile)
 
 #connect to logic node
 logicSocket = socket.socket()
