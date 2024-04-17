@@ -59,12 +59,12 @@ def graphicsServerHandler(s):
     
     
 def writeOutputToFile(index, received):
-    f = open("logs/clientOutput.txt", 'a')
+    f = open("clientOutput.txt", 'a')
     line = ''
     if (received):
-        line = "r:" +  str(index) + '|' + str(datetime.datetime.now()) + '\n'
+        line = "r@" +  str(index) + '|' + str(datetime.datetime.now()) + '\n'
     else:
-        line = "s:" + str(index) + '|' + str(datetime.datetime.now()) + '\n'
+        line = "s@" + str(index) + '|' + str(datetime.datetime.now()) + '\n'
     f.write(line)
     f.close()
 

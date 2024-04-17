@@ -71,7 +71,7 @@ def generateGraphicsMessage():
     return coords
 
 def logCommandReceived(commandIndex):
-    fileName = "logs/logicLog.txt"
+    fileName = "logicLog.txt"
     f = open(fileName, 'a')
     line = commandIndex + '|' + str(datetime.datetime.now()) + '\n'
     f.write(line)

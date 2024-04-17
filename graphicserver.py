@@ -7,7 +7,7 @@ import datetime
 
 def logCommandReceived(indices):
     if len(indices) > 0:
-        f = open("logs/graphicsCommandLog.txt", 'a')
+        f = open("graphicsCommandLog.txt", 'a')
         line = indices + '|' + str(datetime.datetime.now()) + '\n'
         f.write(line)
         f.close()
