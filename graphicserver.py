@@ -47,29 +47,32 @@ print("Graphics Connected to client.")
 done = False
 
 while done == False:
-    message = str(logicSocket.recv(1024).decode())
-    
-    indices = message.split('@')[0]
-    logCommandReceived(indices)
-    
-    print("Indices: " + indices)
-    
-    if "quit" in message.lower():
-        c.send("quit".encode())
-        print("Quit has been received.")
-        break
-    
-    #render scene
-    print('sleeping')
-    
-    renderTime = random.gauss(8.33, 0.32) / 1000
-    time.sleep(renderTime)
-    print('out of sleep')
-    c.send(indices.encode())
-    print('sent index')
-    #c.send(image.tobytes())
-    #print('sent frame')
-    #c.send('!'.encode())
+    try:
+        message = str(logicSocket.recv(1024).decode())
+        
+        indices = message.split('@')[0]
+        logCommandReceived(indices)
+        
+        print(indices + '|' + str(datetime.datetime.now()))
+        
+        if "quit" in message.lower():
+            c.send("quit".encode())
+            print("Quit has been received.")
+            break
+        
+        #render scene
+        #print('sleeping')
+        
+        renderTime = random.gauss(8.33, 0.32) / 1000
+        time.sleep(renderTime)
+        #print('out of sleep')
+        c.send(indices.encode())
+        #print('sent index')
+        #c.send(image.tobytes())
+        #print('sent frame')
+        #c.send('!'.encode())
+    except:
+        done = True
 
 logicSocket.close()
 s.close()

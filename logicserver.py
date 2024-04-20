@@ -15,14 +15,17 @@ def clientConnection(c):
     
     while exit == False:
         
-        x = c.recv(1024).decode()
-        out = "Logic received from client: " + x
-        print(out)
-        
-        queue.put(x)
-        logCommandReceived(x.split('@')[0])
-        
-        if "quit" in x.lower():
+        try:
+            x = c.recv(1024).decode()
+            out = "Logic received from client: " + x
+            print(out)
+            
+            queue.put(x)
+            logCommandReceived(x.split('@')[0])
+            
+            if "quit" in x.lower():
+                exit = True
+        except:
             exit = True
     
     print("LOGIC Shutting down client connection.")
@@ -35,32 +38,35 @@ def graphicsConnection(c):
     exit = False
     
     while exit == False:
-        commandList = []
-        #process queue
-        while queue.empty() == False:
-            commandList.append(queue.get())
-        
-        message = "Message: "
-        commandIndices = ''
-        for command in commandList:
+        try:
+            commandList = []
+            #process queue
+            while queue.empty() == False:
+                commandList.append(queue.get())
             
-            ind = command.split('@')[0]
-            commandIndices = commandIndices + str(ind) + ','
+            message = "Message: "
+            commandIndices = ''
+            for command in commandList:
+                
+                ind = command.split('@')[0]
+                commandIndices = commandIndices + str(ind) + ','
+                
+                if "quit" in command.lower():
+                    exit = True
+                    break
             
-            if "quit" in command.lower():
-                exit = True
-                break
+            
+            message = commandIndices + "@" + generateGraphicsMessage()
+            if exit == True:
+                message = message + "quit"
+            print("Logic Message to Graphics: " + message)
+            c.send(message.encode())
         
         
-        message = commandIndices + "@" + generateGraphicsMessage()
-        if exit == True:
-            message = message + "quit"
-        print("Logic Message to Graphics: " + message)
-        c.send(message.encode())
-        
-        
-        cpuTime = random.gauss(4.70, 0.66) / 1000
-        time.sleep(cpuTime)
+            cpuTime = random.gauss(4.70, 0.66) / 1000
+            time.sleep(cpuTime)
+        except:
+            exit = True
     
     print("LOGIC Shutting down graphics connection.")
 

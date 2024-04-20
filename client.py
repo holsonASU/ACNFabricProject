@@ -12,15 +12,19 @@ def logicServerHandler(s, commandList):
     global done
     
     for command in commandList:
-        message = str(commandIndex) + '@' + str(command[0])
-        
-        writeOutputToFile(commandIndex, False)
-        
-        print("CLIENTSENT: " + message)
-        waitTime = float(command[1])
-        s.send(message.encode())
-        time.sleep(waitTime)
-        commandIndex = commandIndex + 1
+        try:
+            message = str(commandIndex) + '@' + str(command[0])
+            
+            #writeOutputToFile(commandIndex, False)
+            line = "s@" + str(commandIndex) + '|' + str(datetime.datetime.now())
+            
+            print(line)
+            waitTime = float(command[1])
+            s.send(message.encode())
+            time.sleep(waitTime)
+            commandIndex = commandIndex + 1
+        except:
+            break
     
     time.sleep(.4)
     sys.exit()
@@ -31,31 +35,23 @@ def graphicsServerHandler(s):
     global done
     
     while done == False:
+        try:
+             index = s.recv(1024).decode()
+             
+             if 'quit' in index:
+                 break
+
+             
+             count = 0
+             
+             line = "r@" +  str(index) + '|' + str(datetime.datetime.now())
+             print(line)
+           
+            #if index != '':
+                #writeOutputToFile(index, True)
+        except:
+            done = True
         
-        index = s.recv(1024).decode()
-        
-        if 'quit' in index:
-            break
-        
-        #fileSize = int(s.recv(1024).decode())
-        
-        #packets = fileSize/2048
-        
-        #framePacket = ''
-        
-        count = 0
-        #while count < packets+1:
-        #    framePacket = s.recv(2048)
-        #    try:
-        #        framePacket = framePacket.decode()
-        #    except:
-        #        framePacket = ''
-        #    count = count + 1
-       # 
-        if index != '':
-            writeOutputToFile(index, True)
-        
-        print("CLIENT RECEIVED: " + str(index))
     
     
 def writeOutputToFile(index, received):

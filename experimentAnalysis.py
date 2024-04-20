@@ -1,4 +1,7 @@
-from datetime import datetime
+from datetime import datetime as dt
+import datetime
+import matplotlib.pyplot as plt
+import numpy as np
 
 
 def getClientTimes(file):
@@ -28,18 +31,16 @@ def getClientTimes(file):
 
 
 
-def getAverageRTT(experiment):
+def getAverageRTT(filename):
     
-    clientFileName = 'logs/clientLog{}.txt'.format(experiment)
-    
-    clientSent, clientReceived = getClientTimes(clientFileName)
+    clientSent, clientReceived = getClientTimes(filename)
     
     RTTList = list()
     
     for k,v in clientSent.items():
         
         if k in clientReceived:
-            duration = datetime.strptime(clientReceived.get(k), "%Y-%m-%d %H:%M:%S.%f") - datetime.strptime(v, "%Y-%m-%d %H:%M:%S.%f")
+            duration = dt.strptime(clientReceived.get(k), "%Y-%m-%d %H:%M:%S.%f") - dt.strptime(v, "%Y-%m-%d %H:%M:%S.%f")
             RTTList.append(duration)
     
     total = 0
@@ -47,8 +48,42 @@ def getAverageRTT(experiment):
         total = total + r.microseconds
     
     return (total/1000)/len(RTTList)
-    
 
-print(getAverageRTT(0))
+def getFrameRate(filename):
+    
+    f = open(filename, 'r')
+    
+    line = f.readline()
+    
+    minTime = dt.strptime(line.split('|')[1][:-1], "%Y-%m-%d %H:%M:%S.%f")
+    
+    frameRates = list()
+    
+    count = 0
+    for line in f:
+        
+        time = dt.strptime(line.split('|')[1][:-1], "%Y-%m-%d %H:%M:%S.%f")
+        
+        if time >= (minTime + datetime.timedelta(seconds=1)):
+            frameRates.append(count)
+            minTime = time
+            count = 0
+        
+        count = count + 1
+        
+    return frameRates
+
+
+clientFileName = 'Outputs/client{}.txt'.format(0)
+graphicsFileName = 'Outputs/graphic{}.txt'.format(0)  
+
+print(getAverageRTT(clientFileName))
+
+frameRates = getFrameRate(graphicsFileName)
+
+plt.plot(frameRates)
+plt.xlabel("Time Elapsed (s)")
+plt.ylabel("Frame Rate (frames per second)")
+plt.ylim(0, 150)
             
     
