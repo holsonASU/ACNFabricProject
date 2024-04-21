@@ -2,6 +2,7 @@ from datetime import datetime as dt
 import datetime
 import matplotlib.pyplot as plt
 import numpy as np
+import statistics
 
 
 def getClientTimes(file):
@@ -73,17 +74,65 @@ def getFrameRate(filename):
         
     return frameRates
 
+def getBandwidth(filename):
+    
+    f = open(filename, 'r')
+    
+    line = f.readline()
+    
+    minTime = dt.strptime(line.split('|')[1][:-1], "%Y-%m-%d %H:%M:%S.%f")
+    
+    bandwidths = list()
+    
+    count = 0
+    
+    for line in f:
+        
+        time = dt.strptime(line.split('|')[1][:-1], "%Y-%m-%d %H:%M:%S.%f")
+        
+        if time >= (minTime + datetime.timedelta(seconds=1)):
+            bandwidths.append(float(count/1000))
+            minTime = time
+            count = 0
+        
+        count = count + int(line.split('|')[0])
+        
+    return bandwidths
 
-clientFileName = 'Outputs/client{}.txt'.format(0)
-graphicsFileName = 'Outputs/graphic{}.txt'.format(0)  
 
-print(getAverageRTT(clientFileName))
+experiment = 0
 
-frameRates = getFrameRate(graphicsFileName)
+for experiment in range(12):
 
-plt.plot(frameRates)
-plt.xlabel("Time Elapsed (s)")
-plt.ylabel("Frame Rate (frames per second)")
-plt.ylim(0, 150)
+    clientFileName = 'Outputs/client{}.txt'.format(experiment)
+    graphicsFileName = 'Outputs/graphic{}.txt'.format(experiment)  
+    
+    #print(getAverageRTT(clientFileName))
+    
+    frameRates = getFrameRate(graphicsFileName)
+    bandwidths = getBandwidth(graphicsFileName)
+    
+    avgRTT = getAverageRTT(clientFileName)
+    avgFR = statistics.fmean(frameRates)
+    avgBW = statistics.fmean(bandwidths)
+    
+    output = "{},{},{},{}".format(experiment, avgRTT, avgFR, avgBW)
+    print(output)
+    
+    plt.plot(frameRates)
+    plt.xlabel("Time Elapsed (s)")
+    plt.ylabel("Frame Rate (frames per second)")
+    plt.ylim(0, 150)
+    plt.title("Frame Rates for Experiment {}".format(experiment))
+    plt.savefig("Outputs/FrameRate{}.png".format(experiment))
+    
+    plt.clf()
+    plt.plot(bandwidths)
+    plt.xlabel("Time Elapsed (s)")
+    plt.ylabel("Bandwidths (kb)")
+    plt.ylim(0, 600)
+    plt.title("Bandwidth for Experiment {}".format(experiment))
+    plt.savefig("Outputs/Bandwidth{}.png".format(experiment))
+    plt.clf()
             
     
