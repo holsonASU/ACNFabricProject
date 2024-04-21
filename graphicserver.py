@@ -2,8 +2,9 @@ import socket
 import sys
 import random
 import time
-#import cv2
+import cv2
 import datetime
+from mlsocket import MLSocket
 
 def logCommandReceived(indices):
     if len(indices) > 0:
@@ -14,20 +15,24 @@ def logCommandReceived(indices):
         
 def loadImage(file):
     #cap = cv2.imread(file)
-    f = open(file, 'rb')
-    img = f.read()
-    f.close()
-    return img
+    cap = open(file, 'rb')
+    return cap
 
 logicIP = 'localhost'
 videoFile = 'Videos/1080.png'
+gpuTimeMean = 8.33
+gpuTimeStd = 0.32
 
 if len(sys.argv) > 1:
     logicIP = sys.argv[1]
     videoFile = sys.argv[2]
+    gpuTimeMean = float(sys.argv[3])
+    gpuTimeStd = float(sys.argv[4])
 
 #open video
-#image = loadImage(videoFile)
+image = loadImage(videoFile)
+
+imageSize = sys.getsizeof(image)
 
 #connect to logic node
 logicSocket = socket.socket()
@@ -36,7 +41,7 @@ logicSocket.connect((logicIP, logicPort))
 print("Graphics connected to Logic.")
 
 #listen for client node
-s = socket.socket()
+s = MLSocket()
 port = 12343
 
 s.bind(('', port))
@@ -46,6 +51,7 @@ print("Graphics Connected to client.")
 
 done = False
 
+
 while done == False:
     try:
         message = str(logicSocket.recv(1024).decode())
@@ -53,7 +59,7 @@ while done == False:
         indices = message.split('@')[0]
         logCommandReceived(indices)
         
-        print(indices + '|' + str(datetime.datetime.now()))
+        print(str(imageSize) + '|' + str(datetime.datetime.now()))
         
         if "quit" in message.lower():
             c.send("quit".encode())
@@ -63,10 +69,11 @@ while done == False:
         #render scene
         #print('sleeping')
         
-        renderTime = random.gauss(8.33, 0.32) / 1000
+        renderTime = random.gauss(gpuTimeMean, gpuTimeStd) / 1000
         time.sleep(renderTime)
         #print('out of sleep')
         c.send(indices.encode())
+        c.send(image)
         #print('sent index')
         #c.send(image.tobytes())
         #print('sent frame')

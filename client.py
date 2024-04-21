@@ -3,6 +3,7 @@ import threading
 import sys
 import time
 import datetime
+from mlsocket import MLSocket
 
 done = False
 
@@ -37,6 +38,7 @@ def graphicsServerHandler(s):
     while done == False:
         try:
              index = s.recv(1024).decode()
+             image = s.recv(1024)
              
              if 'quit' in index:
                  break
@@ -94,7 +96,7 @@ if __name__ == "__main__":
     port = 12345
     logicSocket.connect((logicIP, port))
     
-    graphicsSocket = socket.socket()
+    graphicsSocket = MLSocket()
     port = 12343
     graphicsSocket.connect((graphicIP, port))
     

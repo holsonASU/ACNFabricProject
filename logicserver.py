@@ -118,6 +118,14 @@ if __name__ == "__main__":
     g.close()
     graphicsSocket.close()
     clientSocket.close()
+    c.close()
+    g.close()
+    graphicsSocket.close()
+    clientSocket.close()
+    c.close()
+    g.close()
+    graphicsSocket.close()
+    clientSocket.close()
     
     print("LOGIC Done with both threads.")
 
